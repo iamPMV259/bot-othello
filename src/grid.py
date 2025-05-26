@@ -190,7 +190,7 @@ class Grid:
     def drawOpponentSelection(self, window):
         '''Vẽ màn hình chọn đối thủ.'''
         
-        description = self.font.render('Chọn đối thủ của bạn!', 1, self.color.purple)
+        description = self.font.render('Choose your opponent!', 1, self.color.purple)
         window.blit(description, (300, 100))
         if self.CoinParity_button.draw(window):
             self.GAME.heuristic = self.GAME.computerPlayer.computerCoinParity
