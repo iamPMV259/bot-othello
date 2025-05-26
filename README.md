@@ -21,7 +21,11 @@ Nhóm 6 - lớp 157486 môn IT3160 - Nhập môn Trí tuệ nhân tạo
   - Chiến thuật chiếm góc (Corner Capturing)
   - Đánh giá độ ổn định (Stability)
   - Đánh giá khả năng di chuyển (Mobility)
-- Đánh giá trọng số động
+- Đánh giá trọng số: 
+  - Corners: 30
+  - Stability: 25
+  - Mobility: 5
+  - Coin parity: 25
 
 
 ## Cài đặt
