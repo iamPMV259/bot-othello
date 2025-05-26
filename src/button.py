@@ -1,10 +1,10 @@
 import pygame
 
-# Define Button class.
+# Định nghĩa lớp Button.
 class Button:
     def __init__(self, text, x, y, fontsize=40):
-        # Initialize some attributes: text on the button, font of the text, position of the button
-        # and a boolean attribute to check if the button is clicked.
+        # Khởi tạo một số thuộc tính: văn bản trên nút, font của văn bản, vị trí của nút
+        # và một thuộc tính boolean để kiểm tra xem nút có được nhấn hay không.
 
         self.font = pygame.font.SysFont('Candara', fontsize, True, False)
         self.text = self.font.render(text, 1, (111, 91, 130))
@@ -13,14 +13,14 @@ class Button:
         self.clicked = True
     
     def draw(self, screen):
-        """Draw the button on your screen. Return True if the button is clicked."""
+        """Vẽ nút lên màn hình. Trả về True nếu nút được nhấn."""
 
         action = False
         
-        # Get mouse position
+        # Lấy vị trí chuột
         pos = pygame.mouse.get_pos()
 
-        # Check if the button is clicked
+        # Kiểm tra xem nút có được nhấn hay không
         if self.rect.collidepoint(pos):
             if not pygame.mouse.get_pressed()[0]:
                 self.clicked = False
@@ -30,7 +30,7 @@ class Button:
         else:
             self.clicked = True
 
-        # Draw the button on the screen
+        # Vẽ nút lên màn hình
         screen.blit(self.text, self.rect.topleft)
 
         return action

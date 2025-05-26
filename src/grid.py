@@ -5,13 +5,13 @@ from color import Color
 import os
 import sys
 
-# Get the absolute path to the project root directory
+# Lấy đường dẫn tuyệt đối đến thư mục gốc của dự án
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMAGES_DIR = os.path.join(PROJECT_ROOT, 'images')
 
-# Utility functions
+# Các hàm tiện ích
 def directions(x, y, minX=0, minY=0, maxX=7, maxY=7):
-    """Check to determine which directions are valid from current cell."""
+    """Kiểm tra để xác định các hướng hợp lệ từ ô hiện tại."""
     validdirections = []
     if x != minX: validdirections.append((x-1, y))
     if x != minX and y != minY: validdirections.append((x-1, y-1))
@@ -27,12 +27,13 @@ def directions(x, y, minX=0, minY=0, maxX=7, maxY=7):
     return validdirections
 
 def loadImages(path, size):
-    """Load an image into the game, and scale the image."""
+    """Tải một hình ảnh vào game và thay đổi kích thước hình ảnh."""
     img = pygame.image.load(path).convert_alpha()
     img = pygame.transform.scale(img, size)
     return img
 
 def loadSpriteSheet(sheet, row, col, newSize, size):
+    """Tải và xử lý sprite sheet."""
     image = pygame.Surface((32, 32)).convert_alpha()
     image.blit(sheet, (0, 0), (row * size[0], col * size[1], size[0], size[1]))
     image = pygame.transform.scale(image, newSize)
@@ -50,7 +51,7 @@ class Grid:
         self.size = size
         token_size = (size[0]*7/8, size[1]*7/8)
 
-        # Load token images and transition images using absolute paths
+        # Tải hình ảnh token và hình ảnh chuyển đổi sử dụng đường dẫn tuyệt đối
         self.whitetoken = loadImages(os.path.join(IMAGES_DIR, 'WhiteToken_New.png'), token_size)
         self.blacktoken = loadImages(os.path.join(IMAGES_DIR, 'BlackToken_New.png'), token_size)
         self.transitionWhiteToBlack = [loadImages(os.path.join(IMAGES_DIR, f'BlackToWhite{i}_New.png'), self.size) for i in range(1, 4)]
@@ -58,17 +59,17 @@ class Grid:
        
         self.tokens = {}
 
-        # Load the grid background.
+        # Tải nền lưới.
         self.gridBg = self.createbgimg()
 
-        # Grid for logical use.
+        # Lưới cho việc sử dụng logic.
         self.gridLogic = self.regenGrid(self.y, self.x)
 
-        # Score of two players.
+        # Điểm số của hai người chơi.
         self.player1Score = 0
         self.player2Score = 0
 
-        # List of buttons in the grid.
+        # Danh sách các nút trong lưới.
         self.play_button = Button('Play', 460, 380)
         self.quit_menu_button = Button('Quit', 460, 480)
         self.resume_button = Button('Resume', 420, 350)
@@ -96,15 +97,15 @@ class Grid:
         self.depth7_button = Button('7', 700, 400)
         self.depth8_button = Button('8', 700, 500)
 
-        # Font used.
+        # Font được sử dụng.
         self.font = pygame.font.SysFont('Candara', 40, True, False)
 
 
         
     def newGame(self):
-        '''Reset the game.'''
+        '''Khởi động lại game.'''
 
-        # Reset some attributes of the game
+        # Đặt lại một số thuộc tính của game
         self.GAME.time = pygame.time.get_ticks()
         self.GAME.opponentSelected = False
         self.GAME.depthSelected = False
@@ -115,14 +116,14 @@ class Grid:
         self.GAME.currentPlayer = -1
         self.GAME.playerSide = -1
 
-        # Clear the tokens and regenerate the logical grid.
+        # Xóa các token và tạo lại lưới logic.
         self.tokens.clear()
         self.gridLogic = self.regenGrid(self.y, self.x)
         
         pygame.time.delay(100)
     
     def createbgimg(self):
-        '''Create background for the grid.'''
+        '''Tạo nền cho lưới.'''
         
         image = pygame.Surface((730, 730))
         color = self.color.grey
@@ -145,7 +146,7 @@ class Grid:
         return image
 
     def regenGrid(self, rows, columns):
-        """Generate a grid of the starting position for logical use."""
+        """Tạo lưới với vị trí bắt đầu cho việc sử dụng logic."""
         
         grid = []
         for y in range(rows):
@@ -161,7 +162,7 @@ class Grid:
         return grid
 
     def calculatePlayerScore(self, player):
-        '''Calculate the scores of 2 players.'''
+        '''Tính điểm số của 2 người chơi.'''
         
         score = 0
         for row in self.gridLogic:
@@ -171,13 +172,13 @@ class Grid:
         return score
 
     def drawScore(self, player, score):
-        '''Draw the scores of 2 players on the screen.'''
+        '''Vẽ điểm số của 2 người chơi lên màn hình.'''
         
         textImg = self.font.render(f'{player} : {score}', 1, self.color.purple)
         return textImg
 
     def drawMenu(self, window):
-        '''Draw the main menu screen.'''
+        '''Vẽ màn hình menu chính.'''
         
         if self.play_button.draw(window):
             self.GAME.menu = True
@@ -187,9 +188,9 @@ class Grid:
             return
 
     def drawOpponentSelection(self, window):
-        '''Draw the opponent selection screen.'''
+        '''Vẽ màn hình chọn đối thủ.'''
         
-        description = self.font.render('Choose your opponent!', 1, self.color.purple)
+        description = self.font.render('Chọn đối thủ của bạn!', 1, self.color.purple)
         window.blit(description, (300, 100))
         if self.CoinParity_button.draw(window):
             self.GAME.heuristic = self.GAME.computerPlayer.computerCoinParity

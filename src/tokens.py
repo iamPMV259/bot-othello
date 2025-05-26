@@ -1,7 +1,7 @@
-# Define Token class.
+# Định nghĩa lớp Token.
 class Token:
     def __init__(self, player, gridX, gridY, image, main):
-        # Initialize some attributes of a token: color (player), position, game, image.
+        # Khởi tạo một số thuộc tính của token: màu (player), vị trí, game, hình ảnh.
         self.player = player
         self.gridX = gridX
         self.gridY = gridY
@@ -11,16 +11,16 @@ class Token:
         self.image = image
 
     def transition(self, transitionImages, tokenImage):
-        '''For token transition.'''
+        '''Cho việc chuyển đổi token.'''
 
         for i in range(30):
-            # Change the image of the token and draw it on the screen.
+            # Thay đổi hình ảnh của token và vẽ nó lên màn hình.
             self.image = transitionImages[i // 10]
             self.GAME.draw()
 
-        # Final image of the token.
+        # Hình ảnh cuối cùng của token.
         self.image = tokenImage
 
     def draw(self, window):
-        '''Draw the token on the screen.'''
+        '''Vẽ token lên màn hình.'''
         window.blit(self.image, (self.posX, self.posY))
