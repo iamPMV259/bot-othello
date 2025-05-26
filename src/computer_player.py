@@ -176,14 +176,39 @@ class ComputerPlayer:
                 newGrid = copy.deepcopy(grid)
             return bestMove, bestScore
         
+    def normalize_score(self, score):
+        """Chuyển đổi điểm từ thang [-100,100] sang [0,1]"""
+        return (score + 100) / 200
+
+    def denormalize_score(self, normalized_score):
+        """Chuyển đổi điểm từ thang [0,1] sang [-100,100]"""
+        return normalized_score * 200 - 100
+
     def EverythingRate(self, corn, coin, mob, sta, grid, depth, alpha, beta, player):
         newGrid = copy.deepcopy(grid)
         availMoves = self.grid.findAvailMoves(newGrid, player)
 
         if depth == 0 or len(availMoves) == 0:
-            bestMove, Score = None, corn * Heuristics.evaluateCorner(grid, player) + sta * Heuristics.evaluate_stability(grid, player) +\
-                            coin * Heuristics.evaluateCoinParity(grid, player) + mob * self.evaluateMobility(grid, player)
-            return bestMove, Score
+            # Tính điểm cho từng heuristic
+            corner_score = Heuristics.evaluateCorner(grid, player)
+            stability_score = Heuristics.evaluate_stability(grid, player)
+            coin_score = Heuristics.evaluateCoinParity(grid, player)
+            mobility_score = self.evaluateMobility(grid, player)
+
+            # Chuẩn hóa các điểm số
+            norm_corner = self.normalize_score(corner_score)
+            norm_stability = self.normalize_score(stability_score)
+            norm_coin = self.normalize_score(coin_score)
+            norm_mobility = self.normalize_score(mobility_score)
+
+            # Tính điểm tổng hợp với trọng số mới
+            total_weight = 30 + 25 + 5 + 25  # Tổng trọng số
+            weighted_score = (30 * norm_corner + 25 * norm_stability + 
+                            5 * norm_mobility + 25 * norm_coin) / total_weight
+
+            # Chuyển đổi về thang [-100,100]
+            final_score = self.denormalize_score(weighted_score)
+            return None, final_score
 
         if player > 0:
             bestScore = -1000000000
@@ -199,8 +224,25 @@ class ComputerPlayer:
                 # Nếu có một nước đi làm cho đối thủ không thể đi được
                 new_availMoves = self.grid.findAvailMoves(newGrid, player*(-1))
                 if len(new_availMoves) == 0:
-                    value = corn * Heuristics.evaluateCorner(newGrid, player*(-1))  + sta * Heuristics.evaluate_stability(grid, player * (-1)) + \
-                        coin * Heuristics.evaluateCoinParity(grid, player * (-1)) + mob * self.evaluateMobility(grid, player * (-1))
+                    # Tính điểm cho từng heuristic
+                    corner_score = Heuristics.evaluateCorner(newGrid, player*(-1))
+                    stability_score = Heuristics.evaluate_stability(newGrid, player*(-1))
+                    coin_score = Heuristics.evaluateCoinParity(newGrid, player*(-1))
+                    mobility_score = self.evaluateMobility(newGrid, player*(-1))
+
+                    # Chuẩn hóa các điểm số
+                    norm_corner = self.normalize_score(corner_score)
+                    norm_stability = self.normalize_score(stability_score)
+                    norm_coin = self.normalize_score(coin_score)
+                    norm_mobility = self.normalize_score(mobility_score)
+
+                    # Tính điểm tổng hợp với trọng số mới
+                    total_weight = 30 + 25 + 5 + 25
+                    weighted_score = (30 * norm_corner + 25 * norm_stability + 
+                                    5 * norm_mobility + 25 * norm_coin) / total_weight
+
+                    # Chuyển đổi về thang [-100,100]
+                    value = self.denormalize_score(weighted_score)
                     bestMove = x, y
                     return bestMove, value
                 
@@ -230,8 +272,25 @@ class ComputerPlayer:
                 # Nếu có một nước đi làm cho đối thủ không thể đi được
                 new_availMoves = self.grid.findAvailMoves(newGrid, player*(-1))
                 if len(new_availMoves) == 0:
-                    value = corn * Heuristics.evaluateCorner(newGrid, player*(-1))  + sta * Heuristics.evaluate_stability(grid, player * (-1)) + \
-                        coin * Heuristics.evaluateCoinParity(grid, player * (-1)) + mob * self.evaluateMobility(grid, player * (-1))
+                    # Tính điểm cho từng heuristic
+                    corner_score = Heuristics.evaluateCorner(newGrid, player*(-1))
+                    stability_score = Heuristics.evaluate_stability(newGrid, player*(-1))
+                    coin_score = Heuristics.evaluateCoinParity(newGrid, player*(-1))
+                    mobility_score = self.evaluateMobility(newGrid, player*(-1))
+
+                    # Chuẩn hóa các điểm số
+                    norm_corner = self.normalize_score(corner_score)
+                    norm_stability = self.normalize_score(stability_score)
+                    norm_coin = self.normalize_score(coin_score)
+                    norm_mobility = self.normalize_score(mobility_score)
+
+                    # Tính điểm tổng hợp với trọng số mới
+                    total_weight = 30 + 25 + 5 + 25
+                    weighted_score = (30 * norm_corner + 25 * norm_stability + 
+                                    5 * norm_mobility + 25 * norm_coin) / total_weight
+
+                    # Chuyển đổi về thang [-100,100]
+                    value = self.denormalize_score(weighted_score)
                     bestMove = x, y
                     return bestMove, value
 
