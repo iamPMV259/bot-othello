@@ -177,6 +177,12 @@ class Grid:
         textImg = self.font.render(f'{player} : {score}', 1, self.color.purple)
         return textImg
 
+    def drawMoveCount(self):
+        '''Vẽ số nước đi hiện tại lên màn hình.'''
+        total_moves = self.player1Score + self.player2Score - 4  # Trừ đi 4 quân ban đầu
+        textImg = self.font.render(f'Move: {total_moves}/60', 1, self.color.purple)
+        return textImg
+
     def drawMenu(self, window):
         '''Vẽ màn hình menu chính.'''
         
@@ -343,6 +349,7 @@ class Grid:
         # Draw the score of 2 players.
         window.blit(self.drawScore('Black', self.player1Score), (775, 100))
         window.blit(self.drawScore('White', self.player2Score), (775, 200))
+        window.blit(self.drawMoveCount(), (775, 300))  # Hiển thị số nước đi
 
         # Draw the tokens.
         for token in self.tokens.values():

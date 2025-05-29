@@ -201,10 +201,32 @@ class ComputerPlayer:
             norm_coin = self.normalize_score(coin_score)
             norm_mobility = self.normalize_score(mobility_score)
 
-            # Tính điểm tổng hợp với trọng số mới
-            total_weight = 30 + 25 + 5 + 25  # Tổng trọng số
-            weighted_score = (30 * norm_corner + 25 * norm_stability + 
-                            5 * norm_mobility + 25 * norm_coin) / total_weight
+            # Tính số nước đi hiện tại
+            total_moves = sum(sum(abs(x) for x in row) for row in grid) - 4
+
+            # Xác định giai đoạn và trọng số tương ứng
+            if total_moves <= 20:  # Giai đoạn mở đầu
+                corner_weight = 5
+                stability_weight = 5
+                mobility_weight = 65
+                coin_weight = 25
+            elif total_moves <= 40:  # Giai đoạn giữa
+                corner_weight = 20
+                stability_weight = 25
+                mobility_weight = 30
+                coin_weight = 25
+            else:  # Giai đoạn cuối
+                corner_weight = 40
+                stability_weight = 30
+                mobility_weight = 5
+                coin_weight = 25
+
+            # Tính điểm tổng hợp với trọng số tương ứng
+            total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
+            weighted_score = (corner_weight * norm_corner + 
+                            stability_weight * norm_stability + 
+                            mobility_weight * norm_mobility + 
+                            coin_weight * norm_coin) / total_weight
 
             # Chuyển đổi về thang [-100,100]
             final_score = self.denormalize_score(weighted_score)
@@ -236,10 +258,32 @@ class ComputerPlayer:
                     norm_coin = self.normalize_score(coin_score)
                     norm_mobility = self.normalize_score(mobility_score)
 
-                    # Tính điểm tổng hợp với trọng số mới
-                    total_weight = 30 + 25 + 5 + 25
-                    weighted_score = (30 * norm_corner + 25 * norm_stability + 
-                                    5 * norm_mobility + 25 * norm_coin) / total_weight
+                    # Tính số nước đi hiện tại
+                    total_moves = sum(sum(abs(x) for x in row) for row in newGrid) - 4
+
+                    # Xác định giai đoạn và trọng số tương ứng
+                    if total_moves <= 20:  # Giai đoạn mở đầu
+                        corner_weight = 5
+                        stability_weight = 5
+                        mobility_weight = 65
+                        coin_weight = 25
+                    elif total_moves <= 40:  # Giai đoạn giữa
+                        corner_weight = 20
+                        stability_weight = 25
+                        mobility_weight = 30
+                        coin_weight = 25
+                    else:  # Giai đoạn cuối
+                        corner_weight = 40
+                        stability_weight = 30
+                        mobility_weight = 5
+                        coin_weight = 25
+
+                    # Tính điểm tổng hợp với trọng số tương ứng
+                    total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
+                    weighted_score = (corner_weight * norm_corner + 
+                                    stability_weight * norm_stability + 
+                                    mobility_weight * norm_mobility + 
+                                    coin_weight * norm_coin) / total_weight
 
                     # Chuyển đổi về thang [-100,100]
                     value = self.denormalize_score(weighted_score)
@@ -284,10 +328,32 @@ class ComputerPlayer:
                     norm_coin = self.normalize_score(coin_score)
                     norm_mobility = self.normalize_score(mobility_score)
 
-                    # Tính điểm tổng hợp với trọng số mới
-                    total_weight = 30 + 25 + 5 + 25
-                    weighted_score = (30 * norm_corner + 25 * norm_stability + 
-                                    5 * norm_mobility + 25 * norm_coin) / total_weight
+                    # Tính số nước đi hiện tại
+                    total_moves = sum(sum(abs(x) for x in row) for row in newGrid) - 4
+
+                    # Xác định giai đoạn và trọng số tương ứng
+                    if total_moves <= 20:  # Giai đoạn mở đầu
+                        corner_weight = 5
+                        stability_weight = 5
+                        mobility_weight = 65
+                        coin_weight = 25
+                    elif total_moves <= 40:  # Giai đoạn giữa
+                        corner_weight = 20
+                        stability_weight = 25
+                        mobility_weight = 30
+                        coin_weight = 25
+                    else:  # Giai đoạn cuối
+                        corner_weight = 40
+                        stability_weight = 30
+                        mobility_weight = 5
+                        coin_weight = 25
+
+                    # Tính điểm tổng hợp với trọng số tương ứng
+                    total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
+                    weighted_score = (corner_weight * norm_corner + 
+                                    stability_weight * norm_stability + 
+                                    mobility_weight * norm_mobility + 
+                                    coin_weight * norm_coin) / total_weight
 
                     # Chuyển đổi về thang [-100,100]
                     value = self.denormalize_score(weighted_score)
