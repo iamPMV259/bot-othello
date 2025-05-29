@@ -41,13 +41,18 @@ cd bot-othello
 pip install uv
 uv sync
 ```
+or
+```bash
+python -m venv .venv
+pip install -r requirements.txt
+```
 
 ## Cách chơi
 
 1. Chạy game:
 ```bash
 source .venv/bin/activate
-python src/main.py
+python3 src/main.py
 ```
 
 2. Chọn bên chơi (Đen hoặc Trắng)
