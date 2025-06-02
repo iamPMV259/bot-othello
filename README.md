@@ -15,7 +15,7 @@ Nhóm 6 - lớp 157486 môn IT3160 - Nhập môn Trí tuệ nhân tạo
 
 ## Các kĩ thuật sử dụng
 
-- Sử dụng Minimax Search, Alpha-Beta Prunning with iteractive deepening
+- Sử dụng Minimax Search, Alpha-Beta Prunning
 - Nhiều chiến lược heuristic:
   - Đánh giá sự đối xứng của đồng xu (Coin Parity)
   - Chiến thuật chiếm góc (Corner Capturing)
@@ -34,6 +34,8 @@ Nhóm 6 - lớp 157486 môn IT3160 - Nhập môn Trí tuệ nhân tạo
 ```bash
 git clone https://github.com/yourusername/bot-othello.git
 cd bot-othello
+git checkout static-weight
+git pull
 ```
 
 2. Cài đặt các thư viện cần thiết:
