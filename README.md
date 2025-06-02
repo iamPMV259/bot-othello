@@ -21,13 +21,16 @@ Nhóm 6 - lớp 157486 môn IT3160 - Nhập môn Trí tuệ nhân tạo
   - Chiến thuật chiếm góc (Corner Capturing)
   - Đánh giá độ ổn định (Stability)
   - Đánh giá khả năng di chuyển (Mobility)
-- Đánh giá trọng số: Dynamic weight 
-|     Heuristics      |   Đầu game    |   Giữa game    |   Cuối game    |
-| ------------------- | ------------- | -------------- | -------------- |
-|    Coin parity      |       25      |       25       |       25       |
-|       Mobility      |       65      |       30       |        5       |
-|       Corners       |       5       |       20       |       40       |
-|      Stability      |       5       |       25       |       30       |
+- Đánh giá trọng số: Dynamic weight
+
+### Đánh giá trọng số: Dynamic weight
+
+| Heuristics | Đầu game | Giữa game | Cuối game |
+|:-----------|:--------:|:---------:|:---------:|
+| Coin parity | 25 | 25 | 25 |
+| Mobility | 65 | 30 | 5 |
+| Corners | 5 | 20 | 40 |
+| Stability | 5 | 25 | 30 |
 
 
 ## Cài đặt
