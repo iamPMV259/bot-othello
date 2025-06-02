@@ -1,6 +1,7 @@
 from grid import *
 import copy
 from heuristics import Heuristics
+import time
 
 
 # Định nghĩa lớp ComputerPlayer
@@ -185,190 +186,170 @@ class ComputerPlayer:
         return normalized_score * 200 - 100
 
     def EverythingRate(self, corn, coin, mob, sta, grid, depth, alpha, beta, player):
-        newGrid = copy.deepcopy(grid)
-        availMoves = self.grid.findAvailMoves(newGrid, player)
+        start_time = time.time()
+        time_limit = 3.0  # 3 seconds time limit
+        best_move_so_far = None
+        best_score_so_far = float('-inf') if player > 0 else float('inf')
+        current_depth = 1
 
-        if depth == 0 or len(availMoves) == 0:
-            # Tính điểm cho từng heuristic
-            corner_score = Heuristics.evaluateCorner(grid, player)
-            stability_score = Heuristics.evaluate_stability(grid, player)
-            coin_score = Heuristics.evaluateCoinParity(grid, player)
-            mobility_score = self.evaluateMobility(grid, player)
-
-            # Chuẩn hóa các điểm số
-            norm_corner = self.normalize_score(corner_score)
-            norm_stability = self.normalize_score(stability_score)
-            norm_coin = self.normalize_score(coin_score)
-            norm_mobility = self.normalize_score(mobility_score)
-
-            # Tính số nước đi hiện tại
-            total_moves = sum(sum(abs(x) for x in row) for row in grid) - 4
-
-            # Xác định giai đoạn và trọng số tương ứng
-            if total_moves <= 20:  # Giai đoạn mở đầu
-                corner_weight = 5
-                stability_weight = 5
-                mobility_weight = 65
-                coin_weight = 25
-            elif total_moves <= 40:  # Giai đoạn giữa
-                corner_weight = 20
-                stability_weight = 25
-                mobility_weight = 30
-                coin_weight = 25
-            else:  # Giai đoạn cuối
-                corner_weight = 40
-                stability_weight = 30
-                mobility_weight = 5
-                coin_weight = 25
-
-            # Tính điểm tổng hợp với trọng số tương ứng
-            total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
-            weighted_score = (corner_weight * norm_corner + 
-                            stability_weight * norm_stability + 
-                            mobility_weight * norm_mobility + 
-                            coin_weight * norm_coin) / total_weight
-
-            # Chuyển đổi về thang [-100,100]
-            final_score = self.denormalize_score(weighted_score)
-            return None, final_score
-
-        if player > 0:
-            bestScore = -1000000000
-            bestMove = None
-
-            for move in availMoves:
-                x, y = move
-                swappableTiles = self.grid.swappableTiles(x, y, newGrid, player)
-                newGrid[x][y] = player
-                for tile in swappableTiles:
-                    newGrid[tile[0]][tile[1]] = player
-                
-                # Nếu có một nước đi làm cho đối thủ không thể đi được
-                new_availMoves = self.grid.findAvailMoves(newGrid, player*(-1))
-                if len(new_availMoves) == 0:
-                    # Tính điểm cho từng heuristic
-                    corner_score = Heuristics.evaluateCorner(newGrid, player*(-1))
-                    stability_score = Heuristics.evaluate_stability(newGrid, player*(-1))
-                    coin_score = Heuristics.evaluateCoinParity(newGrid, player*(-1))
-                    mobility_score = self.evaluateMobility(newGrid, player*(-1))
-
-                    # Chuẩn hóa các điểm số
-                    norm_corner = self.normalize_score(corner_score)
-                    norm_stability = self.normalize_score(stability_score)
-                    norm_coin = self.normalize_score(coin_score)
-                    norm_mobility = self.normalize_score(mobility_score)
-
-                    # Tính số nước đi hiện tại
-                    total_moves = sum(sum(abs(x) for x in row) for row in newGrid) - 4
-
-                    # Xác định giai đoạn và trọng số tương ứng
-                    if total_moves <= 20:  # Giai đoạn mở đầu
-                        corner_weight = 5
-                        stability_weight = 5
-                        mobility_weight = 65
-                        coin_weight = 25
-                    elif total_moves <= 40:  # Giai đoạn giữa
-                        corner_weight = 20
-                        stability_weight = 25
-                        mobility_weight = 30
-                        coin_weight = 25
-                    else:  # Giai đoạn cuối
-                        corner_weight = 40
-                        stability_weight = 30
-                        mobility_weight = 5
-                        coin_weight = 25
-
-                    # Tính điểm tổng hợp với trọng số tương ứng
-                    total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
-                    weighted_score = (corner_weight * norm_corner + 
-                                    stability_weight * norm_stability + 
-                                    mobility_weight * norm_mobility + 
-                                    coin_weight * norm_coin) / total_weight
-
-                    # Chuyển đổi về thang [-100,100]
-                    value = self.denormalize_score(weighted_score)
-                    bestMove = x, y
-                    return bestMove, value
-                
-                bMove, value = self.EverythingRate(corn, coin, mob, sta, newGrid, depth-1, alpha, beta, player*(-1))
-
-                if value > bestScore:
-                    bestScore = value
-                    bestMove = move
-                alpha = max(alpha, bestScore)
-                if beta <= alpha:
-                    break
-
+        while time.time() - start_time < time_limit:
+            try:
                 newGrid = copy.deepcopy(grid)
-            return bestMove, bestScore
+                availMoves = self.grid.findAvailMoves(newGrid, player)
 
-        if player < 0:
-            bestScore = 1000000000
-            bestMove = None
+                if len(availMoves) == 0:
+                    return None, 0
 
-            for move in availMoves:
-                x, y = move
-                swappableTiles = self.grid.swappableTiles(x, y, newGrid, player)
-                newGrid[x][y] = player
-                for tile in swappableTiles:
-                    newGrid[tile[0]][tile[1]] = player
-                
-                # Nếu có một nước đi làm cho đối thủ không thể đi được
-                new_availMoves = self.grid.findAvailMoves(newGrid, player*(-1))
-                if len(new_availMoves) == 0:
-                    # Tính điểm cho từng heuristic
-                    corner_score = Heuristics.evaluateCorner(newGrid, player*(-1))
-                    stability_score = Heuristics.evaluate_stability(newGrid, player*(-1))
-                    coin_score = Heuristics.evaluateCoinParity(newGrid, player*(-1))
-                    mobility_score = self.evaluateMobility(newGrid, player*(-1))
+                if player > 0:
+                    bestScore = float('-inf')
+                    bestMove = None
 
-                    # Chuẩn hóa các điểm số
-                    norm_corner = self.normalize_score(corner_score)
-                    norm_stability = self.normalize_score(stability_score)
-                    norm_coin = self.normalize_score(coin_score)
-                    norm_mobility = self.normalize_score(mobility_score)
+                    for move in availMoves:
+                        if time.time() - start_time >= time_limit:
+                            return best_move_so_far, best_score_so_far
 
-                    # Tính số nước đi hiện tại
-                    total_moves = sum(sum(abs(x) for x in row) for row in newGrid) - 4
+                        x, y = move
+                        swappableTiles = self.grid.swappableTiles(x, y, newGrid, player)
+                        newGrid[x][y] = player
+                        for tile in swappableTiles:
+                            newGrid[tile[0]][tile[1]] = player
+                        
+                        # Check if opponent has no moves
+                        new_availMoves = self.grid.findAvailMoves(newGrid, player*(-1))
+                        if len(new_availMoves) == 0:
+                            # Calculate heuristic scores
+                            corner_score = Heuristics.evaluateCorner(newGrid, player*(-1))
+                            stability_score = Heuristics.evaluate_stability(newGrid, player*(-1))
+                            coin_score = Heuristics.evaluateCoinParity(newGrid, player*(-1))
+                            mobility_score = self.evaluateMobility(newGrid, player*(-1))
 
-                    # Xác định giai đoạn và trọng số tương ứng
-                    if total_moves <= 20:  # Giai đoạn mở đầu
-                        corner_weight = 5
-                        stability_weight = 5
-                        mobility_weight = 65
-                        coin_weight = 25
-                    elif total_moves <= 40:  # Giai đoạn giữa
-                        corner_weight = 20
-                        stability_weight = 25
-                        mobility_weight = 30
-                        coin_weight = 25
-                    else:  # Giai đoạn cuối
-                        corner_weight = 40
-                        stability_weight = 30
-                        mobility_weight = 5
-                        coin_weight = 25
+                            # Normalize scores
+                            norm_corner = self.normalize_score(corner_score)
+                            norm_stability = self.normalize_score(stability_score)
+                            norm_coin = self.normalize_score(coin_score)
+                            norm_mobility = self.normalize_score(mobility_score)
 
-                    # Tính điểm tổng hợp với trọng số tương ứng
-                    total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
-                    weighted_score = (corner_weight * norm_corner + 
-                                    stability_weight * norm_stability + 
-                                    mobility_weight * norm_mobility + 
-                                    coin_weight * norm_coin) / total_weight
+                            # Calculate current move count
+                            total_moves = sum(sum(abs(x) for x in row) for row in newGrid) - 4
 
-                    # Chuyển đổi về thang [-100,100]
-                    value = self.denormalize_score(weighted_score)
-                    bestMove = x, y
-                    return bestMove, value
+                            # Determine phase and weights
+                            if total_moves <= 20:  # Opening
+                                corner_weight = 5
+                                stability_weight = 5
+                                mobility_weight = 65
+                                coin_weight = 25
+                            elif total_moves <= 40:  # Middle
+                                corner_weight = 20
+                                stability_weight = 25
+                                mobility_weight = 30
+                                coin_weight = 25
+                            else:  # End
+                                corner_weight = 40
+                                stability_weight = 30
+                                mobility_weight = 5
+                                coin_weight = 25
 
-                bMove, value = self.EverythingRate(corn, coin, mob, sta, newGrid, depth-1, alpha, beta, player*(-1))
+                            # Calculate weighted score
+                            total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
+                            weighted_score = (corner_weight * norm_corner + 
+                                            stability_weight * norm_stability + 
+                                            mobility_weight * norm_mobility + 
+                                            coin_weight * norm_coin) / total_weight
 
-                if value < bestScore:
-                    bestScore = value
-                    bestMove = move
-                beta = min(beta, bestScore)
-                if beta <= alpha:
-                    break
+                            value = self.denormalize_score(weighted_score)
+                            bestMove = x, y
+                            return bestMove, value
 
-                newGrid = copy.deepcopy(grid)
-            
-            return bestMove, bestScore
+                        bMove, value = self.EverythingRate(corn, coin, mob, sta, newGrid, current_depth-1, alpha, beta, player*(-1))
+
+                        if value > bestScore:
+                            bestScore = value
+                            bestMove = move
+                            best_move_so_far = move
+                            best_score_so_far = value
+                        alpha = max(alpha, bestScore)
+                        if beta <= alpha:
+                            break
+
+                        newGrid = copy.deepcopy(grid)
+
+                else:  # player < 0
+                    bestScore = float('inf')
+                    bestMove = None
+
+                    for move in availMoves:
+                        if time.time() - start_time >= time_limit:
+                            return best_move_so_far, best_score_so_far
+
+                        x, y = move
+                        swappableTiles = self.grid.swappableTiles(x, y, newGrid, player)
+                        newGrid[x][y] = player
+                        for tile in swappableTiles:
+                            newGrid[tile[0]][tile[1]] = player
+                        
+                        # Check if opponent has no moves
+                        new_availMoves = self.grid.findAvailMoves(newGrid, player*(-1))
+                        if len(new_availMoves) == 0:
+                            # Calculate heuristic scores
+                            corner_score = Heuristics.evaluateCorner(newGrid, player*(-1))
+                            stability_score = Heuristics.evaluate_stability(newGrid, player*(-1))
+                            coin_score = Heuristics.evaluateCoinParity(newGrid, player*(-1))
+                            mobility_score = self.evaluateMobility(newGrid, player*(-1))
+
+                            # Normalize scores
+                            norm_corner = self.normalize_score(corner_score)
+                            norm_stability = self.normalize_score(stability_score)
+                            norm_coin = self.normalize_score(coin_score)
+                            norm_mobility = self.normalize_score(mobility_score)
+
+                            # Calculate current move count
+                            total_moves = sum(sum(abs(x) for x in row) for row in newGrid) - 4
+
+                            # Determine phase and weights
+                            if total_moves <= 20:  # Opening
+                                corner_weight = 5
+                                stability_weight = 5
+                                mobility_weight = 65
+                                coin_weight = 25
+                            elif total_moves <= 40:  # Middle
+                                corner_weight = 20
+                                stability_weight = 25
+                                mobility_weight = 30
+                                coin_weight = 25
+                            else:  # End
+                                corner_weight = 40
+                                stability_weight = 30
+                                mobility_weight = 5
+                                coin_weight = 25
+
+                            # Calculate weighted score
+                            total_weight = corner_weight + stability_weight + mobility_weight + coin_weight
+                            weighted_score = (corner_weight * norm_corner + 
+                                            stability_weight * norm_stability + 
+                                            mobility_weight * norm_mobility + 
+                                            coin_weight * norm_coin) / total_weight
+
+                            value = self.denormalize_score(weighted_score)
+                            bestMove = x, y
+                            return bestMove, value
+
+                        bMove, value = self.EverythingRate(corn, coin, mob, sta, newGrid, current_depth-1, alpha, beta, player*(-1))
+
+                        if value < bestScore:
+                            bestScore = value
+                            bestMove = move
+                            best_move_so_far = move
+                            best_score_so_far = value
+                        beta = min(beta, bestScore)
+                        if beta <= alpha:
+                            break
+
+                        newGrid = copy.deepcopy(grid)
+
+                current_depth += 1
+
+            except Exception as e:
+                # If we encounter any issues during the search, return the best move found so far
+                return best_move_so_far, best_score_so_far
+
+        return best_move_so_far, best_score_so_far
